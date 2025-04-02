@@ -88,37 +88,62 @@ function generar() {
     let cantidad = parseInt(document.getElementById("cantidad").value);
     let distribucion = document.getElementById("distribucion").value;
     let tablaBody = document.getElementById("tablaBody");
-    tablaBody.innerHTML = ""; // esto limopia la tabla antes de agregar nuevos valores
+    tablaBody.innerHTML = ""; // Limpia la tabla antes de agregar nuevos valores
     let valores = []; // Almacenar valores para el histograma
 
-    for (let i = 0; i < cantidad; i++) {
+    let count = 0; // Contador para asegurarnos de que se generen la cantidad correcta de números
+
+    while (count < cantidad) {
         let resultado;
+
         if (distribucion === "uniforme") {
             let a = parseFloat(document.getElementById("cotaInferior").value);
             let b = parseFloat(document.getElementById("cotaSuperior").value);
             resultado = generarUniforme(a, b);
+            valores.push(resultado.valor);
+            agregarFila(count + 1, resultado.valor, resultado.calculo);
+            count++;
+
         } else if (distribucion === "exponencial") {
             let lambda = parseFloat(document.getElementById("lambda").value);
             resultado = generarExponencial(lambda);
+            valores.push(resultado.valor);
+            agregarFila(count + 1, resultado.valor, resultado.calculo);
+            count++;
+
         } else if (distribucion === "poisson") {
             let media = parseFloat(document.getElementById("mediaPoisson").value);
             resultado = generarPoisson(media);
+            valores.push(resultado.valor);
+            agregarFila(count + 1, resultado.valor, resultado.calculo);
+            count++;
+
         } else if (distribucion === "normalBoxMuller") {
             let media = parseFloat(document.getElementById("media").value);
             let desviacion = parseFloat(document.getElementById("desviacion").value);
+
             let resultados = generarNormalBoxMuller(media, desviacion);
-            valores.push(resultados[0].valor, resultados[1].valor);
-            agregarFila(i + 1, resultados[0].valor, resultados[0].calculo);
-            agregarFila(i + 2, resultados[1].valor, resultados[1].calculo);
-            continue;
+
+            if (count < cantidad) {
+                valores.push(resultados[0].valor);
+                agregarFila(count + 1, resultados[0].valor, resultados[0].calculo);
+                count++;
+            }
+
+            if (count < cantidad) {
+                valores.push(resultados[1].valor);
+                agregarFila(count + 1, resultados[1].valor, resultados[1].calculo);
+                count++;
+            }
+
         } else if (distribucion === "normalConvolucion") {
             let media = parseFloat(document.getElementById("media").value);
             let desviacion = parseFloat(document.getElementById("desviacion").value);
             resultado = generarNormalConvolucion(media, desviacion);
+            valores.push(resultado.valor);
+            agregarFila(count + 1, resultado.valor, resultado.calculo);
+            count++;
         }
-
-        valores.push(resultado.valor);
-        agregarFila(i + 1, resultado.valor, resultado.calculo);
     }
 
     actualizarHistograma(valores);
